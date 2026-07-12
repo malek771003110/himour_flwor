@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة تحكم الأدمن | عشق حيمور</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .admin-section {
+      display: none;
+    }
+    .admin-section.active {
+      display: block;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN CONTAINER ── -->
+  <div class="admin-login" id="adminLoginBlock">
+    <div class="login-card">
+      <div class="login-logo"><i class="fas fa-spa"></i></div>
+      <h1>لوحة تحكم وَرد</h1>
+      <p>الرجاء تسجيل الدخول لإدارة الطلبات والمنتجات</p>
+      
+      <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group" style="text-align: right;">
+          <label for="adminUser">اسم المستخدم</label>
+          <input type="text" id="adminUser" class="form-control" placeholder="أدخل اسم المستخدم..." required>
+        </div>
+        <div class="form-group" style="text-align: right;">
+          <label for="adminPass">كلمة المرور</label>
+          <input type="password" id="adminPass" class="form-control" placeholder="أدخل كلمة المرور..." required>
+        </div>
+        <div id="loginError" style="color: var(--color-danger); font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; display: none;">
+          اسم المستخدم أو كلمة المرور غير صحيحة!
+        </div>
+        <button type="submit" class="btn btn-primary w-full btn-lg">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD CONTAINER (Admin Layout) ── -->
+  <div class="admin-layout" id="adminLayoutBlock" style="display: none;">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-spa"></i>
+        <span>لوحة التحكم - وَرد</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="active" onclick="switchAdminSection('overview', this)">
+          <i class="fas fa-chart-pie"></i> الرئيسية
+        </a>
+        <a href="#" onclick="switchAdminSection('orders', this)">
+          <i class="fas fa-shopping-bag"></i> إدارة الطلبات
+        </a>
+        <a href="#" onclick="switchAdminSection('products', this)">
+          <i class="fas fa-gift"></i> إدارة المنتجات
+        </a>
+        <a href="#" onclick="switchAdminSection('weddings', this)">
+          <i class="fas fa-car"></i> حجوزات الأعراس
+        </a>
+        <a href="#" style="margin-top: 3rem; color: #ef4444;" onclick="handleLogout()">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-main">
+      <!-- Header -->
+      <header class="admin-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="mobile-menu-btn" style="display: none; border: 1px solid var(--color-secondary); border-radius: var(--radius-sm);" onclick="toggleAdminSidebar()">
+            <span></span><span></span><span></span>
+          </button>
+          <h2 id="adminSectionTitle" style="font-size: 1.25rem; font-weight: 800; color: var(--color-text);">الرئيسية</h2>
+        </div>
+        <div style="font-size: 0.9rem; font-weight: 600; color: var(--color-text-light);">
+          مرحباً، <span class="text-primary">مدير النظام</span> <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="admin-content">
+        
+        <!-- SECTION 1: OVERVIEW -->
+        <section class="admin-section active" id="sec-overview">
+          <!-- Stats Row -->
+          <div class="admin-stats">
+            <div class="admin-stat-card">
+              <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22C55E;">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="statSales">0 د.أ</h3>
+                <p>إجمالي المبيعات (الطلبات المستلمة)</p>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="stat-icon" style="background: rgba(200, 67, 106, 0.1); color: var(--color-primary);">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="statOrders">0</h3>
+                <p>إجمالي عدد الطلبات</p>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="stat-icon" style="background: rgba(212, 168, 83, 0.1); color: var(--color-gold);">
+                <i class="fas fa-car"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="statWeddings">0</h3>
+                <p>حجوزات السيارات</p>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="statOutOfStock">0</h3>
+                <p>منتجات شقّت على النفاد (المخزن &le; 3)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders Block -->
+          <div class="admin-table-container">
+            <div class="admin-table-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;"><i class="fas fa-clock"></i> أحدث الطلبات المستلمة</h3>
+              <button class="btn btn-sm btn-outline-primary" onclick="switchAdminSection('orders')">عرض الكل</button>
+            </div>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>العميل</th>
+                  <th>المدينة</th>
+                  <th>تاريخ التوصيل</th>
+                  <th>المجموع الكلي</th>
+                  <th>الحالة</th>
+                  <th>خيارات</th>
+                </tr>
+              </thead>
+              <tbody id="recentOrdersTbody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECTION 2: ORDERS -->
+        <section class="admin-section" id="sec-orders">
+          <div class="admin-table-container">
+            <div class="admin-table-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;"><i class="fas fa-list"></i> قائمة الطلبات كاملة</h3>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <select id="orderStatusFilter" class="form-control" style="width: auto; padding: 0.35rem 0.75rem;" onchange="renderOrdersTable()">
+                  <option value="all">كل الحالات</option>
+                  <option value="new">جديد</option>
+                  <option value="processing">قيد التجهيز</option>
+                  <option value="delivered">تم التوصيل</option>
+                  <option value="cancelled">ملغي</option>
+                </select>
+                <button class="btn btn-sm btn-outline-primary" onclick="printOrdersList()"><i class="fas fa-print"></i> طباعة</button>
+              </div>
+            </div>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>العميل</th>
+                  <th>الجوال</th>
+                  <th>المدينة / الحي</th>
+                  <th>تاريخ التوصيل</th>
+                  <th>المجموع</th>
+                  <th>طريقة الدفع</th>
+                  <th>الحالة</th>
+                  <th>خيارات</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTbody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECTION 3: PRODUCTS -->
+        <section class="admin-section" id="sec-products">
+          <div class="admin-table-container">
+            <div class="admin-table-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;"><i class="fas fa-boxes"></i> مستودع المنتجات</h3>
+              <button class="btn btn-sm btn-primary" onclick="openProductAddModal()"><i class="fas fa-plus"></i> إضافة منتج جديد</button>
+            </div>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>معاينة</th>
+                  <th>الاسم</th>
+                  <th>القسم</th>
+                  <th>السعر الحالي</th>
+                  <th>السعر الأصلي</th>
+                  <th>الكمية المتاحة</th>
+                  <th>التقييم</th>
+                  <th>خيارات</th>
+                </tr>
+              </thead>
+              <tbody id="productsTbody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECTION 4: WEDDINGS -->
+        <section class="admin-section" id="sec-weddings">
+          <div class="admin-table-container">
+            <div class="admin-table-header">
+              <h3 style="font-size: 1.05rem; font-weight: 800;"><i class="fas fa-ring"></i> حجوزات تجهيز سيارات العرسان</h3>
+              <select id="bookingStatusFilter" class="form-control" style="width: auto; padding: 0.35rem 0.75rem;" onchange="renderBookingsTable()">
+                <option value="all">كل الحالات</option>
+                <option value="pending">قيد الانتظار</option>
+                <option value="confirmed">تم التأكيد</option>
+                <option value="completed">تم التجهيز</option>
+                <option value="cancelled">ملغى</option>
+              </select>
+            </div>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>رقم الحجز</th>
+                  <th>العريس</th>
+                  <th>الجوال</th>
+                  <th>السيارة</th>
+                  <th>الباقة</th>
+                  <th>التاريخ والوقت</th>
+                  <th>ملاحظات</th>
+                  <th>الحالة</th>
+                  <th>خيارات</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTbody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ── MODAL: VIEW ORDER DETAILS ── -->
+  <div class="admin-modal" id="adminOrderModal">
+    <div class="admin-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(200,67,106,0.1); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--color-primary);"><i class="fas fa-file-invoice"></i> تفاصيل فاتورة الطلب</h2>
+        <button class="modal-close" style="position: static;" onclick="closeAdminModal('adminOrderModal')"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <div id="orderModalBody" style="font-size: 0.95rem;">
+        <!-- Filled via JS -->
+      </div>
+      
+      <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button class="btn btn-outline-primary" onclick="printInvoice()"><i class="fas fa-print"></i> طباعة الفاتورة</button>
+        <button class="btn btn-primary" onclick="closeAdminModal('adminOrderModal')">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: VIEW/EDIT WEDDING BOOKING ── -->
+  <div class="admin-modal" id="adminBookingModal">
+    <div class="admin-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(200,67,106,0.1); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--color-primary);"><i class="fas fa-ring"></i> إدارة حجز سيارة زفاف</h2>
+        <button class="modal-close" style="position: static;" onclick="closeAdminModal('adminBookingModal')"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <div id="bookingModalBody" style="font-size: 0.95rem;">
+        <!-- Filled via JS -->
+      </div>
+      
+      <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button class="btn btn-primary" id="btnSaveBookingChanges">حفظ التغييرات</button>
+        <button class="btn btn-outline-primary" onclick="closeAdminModal('adminBookingModal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: ADD / EDIT PRODUCT ── -->
+  <div class="admin-modal" id="adminProductModal">
+    <div class="admin-modal-content" style="max-width: 750px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(200,67,106,0.1); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--color-primary);" id="productModalTitle"><i class="fas fa-plus"></i> إضافة منتج جديد</h2>
+        <button class="modal-close" style="position: static;" onclick="closeAdminModal('adminProductModal')"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <form id="productForm" onsubmit="event.preventDefault(); saveProductData();">
+        <input type="hidden" id="prodId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodName">اسم المنتج (عربي) <span class="required">*</span></label>
+            <input type="text" id="prodName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="prodNameEn">اسم المنتج (En) <span class="required">*</span></label>
+            <input type="text" id="prodNameEn" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodCategory">القسم <span class="required">*</span></label>
+            <select id="prodCategory" class="form-control" required>
+              <option value="">اختر القسم...</option>
+              <option value="باقات ورد">باقات ورد</option>
+              <option value="ورود منفردة">ورود منفردة</option>
+              <option value="هدايا">هدايا</option>
+              <option value="نباتات">نباتات</option>
+              <option value="إكسسوارات">إكسسوارات</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="prodStock">الكمية المتوفرة (المخزن) <span class="required">*</span></label>
+            <input type="number" id="prodStock" class="form-control" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodPrice">سعر البيع الحالي (د.أ) <span class="required">*</span></label>
+            <input type="number" id="prodPrice" class="form-control" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="prodOrigPrice">السعر الأصلي (قبل الخصم) <span class="required">*</span></label>
+            <input type="number" id="prodOrigPrice" class="form-control" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prodImages">روابط الصور (رابط في كل سطر أو مفصولة بفاصلة) <span class="required">*</span></label>
+          <textarea id="prodImages" class="form-control" style="min-height: 60px;" placeholder="https://unsplash.com/example..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodOccasions">المناسبات (مفصولة بفاصلة - مثال: عيد ميلاد، تخرج)</label>
+            <input type="text" id="prodOccasions" class="form-control" placeholder="مثال: عيد ميلاد، عرس...">
+          </div>
+          <div class="form-group">
+            <label for="prodRating">التقييم الافتراضي (0 - 5)</label>
+            <input type="number" id="prodRating" class="form-control" min="0" max="5" step="0.1" value="4.5">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodColors">الألوان المتاحة (مفصولة بفاصلة - اختياري)</label>
+            <input type="text" id="prodColors" class="form-control" placeholder="مثال: أحمر، وردي، أبيض">
+          </div>
+          <div class="form-group">
+            <label for="prodSizes">الأحجام المتاحة (مفصولة بفاصلة - اختياري)</label>
+            <input type="text" id="prodSizes" class="form-control" placeholder="مثال: صغيرة، وسط، كبيرة">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prodShortDesc">وصف قصير <span class="required">*</span></label>
+          <input type="text" id="prodShortDesc" class="form-control" placeholder="مثال: باقة جوري أحمر فاخر..." required>
+        </div>
+
+        <div class="form-group">
+          <label for="prodFullDesc">الوصف الكامل والمواصفات <span class="required">*</span></label>
+          <textarea id="prodFullDesc" class="form-control" style="min-height: 100px;" required></textarea>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem;">
+          <input type="checkbox" id="prodIsFeatured" style="width: 20px; height: 20px; cursor: pointer;">
+          <label for="prodIsFeatured" style="margin-bottom: 0; cursor: pointer; font-weight: bold; color: var(--color-primary);">تميز المنتج (عرضه في الصفحة الرئيسية)</label>
+        </div>
+
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+          <button type="submit" class="btn btn-primary" id="btnSaveProduct">حفظ المنتج</button>
+          <button type="button" class="btn btn-outline-primary" onclick="closeAdminModal('adminProductModal')">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast script load -->
+  <!-- Firebase SDK (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Config -->
+  <script src="js/firebase-config.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
