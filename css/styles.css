@@ -759,6 +759,15 @@ ul, ol {
 .product-actions-overlay .action-icon.favorited {
   background: var(--color-primary);
   color: white;
+  animation: heartbeat 0.5s ease-in-out;
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
 .product-card .product-info {
@@ -3062,10 +3071,36 @@ body.dark-mode .step-content,
 body.dark-mode .admin-card,
 body.dark-mode .admin-sidebar,
 body.dark-mode .admin-header,
-body.dark-mode .category-card {
+body.dark-mode .category-card,
+body.dark-mode .filter-bar,
+body.dark-mode .service-card,
+body.dark-mode .feature-card,
+body.dark-mode .cart-item,
+body.dark-mode .payment-method,
+body.dark-mode .receipt-card,
+body.dark-mode .value-card,
+body.dark-mode .team-member {
   background-color: var(--color-white) !important;
   color: var(--color-text);
   border-color: rgba(255,255,255,0.05) !important;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+  border-color: var(--color-primary) !important;
+}
+
+body.dark-mode .page-header {
+  background: linear-gradient(135deg, var(--color-bg), var(--color-white)) !important;
 }
 
 body.dark-mode .product-actions-overlay .action-icon {
