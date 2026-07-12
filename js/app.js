@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════════
    💐 Eshq Haymour - Core Application JS
    ═══════════════════════════════════════════ */
 
@@ -409,8 +409,9 @@ const Cart = {
   },
 
   addItem(productId, quantity = 1, greeting = '', options = {}) {
+    const id = String(productId);
     const items = this.getItems();
-    const existing = items.find(item => item.productId === productId);
+    const existing = items.find(item => String(item.productId) === id);
 
     if (existing) {
       existing.quantity += quantity;
@@ -419,7 +420,7 @@ const Cart = {
         existing.options = { ...(existing.options || {}), ...options };
       }
     } else {
-      items.push({ productId, quantity, greeting, options: options || {}, addedAt: Date.now() });
+      items.push({ productId: id, quantity, greeting, options: options || {}, addedAt: Date.now() });
     }
 
     this.saveItems(items);
@@ -428,19 +429,21 @@ const Cart = {
   },
 
   removeItem(productId) {
+    const id = String(productId);
     let items = this.getItems();
-    items = items.filter(item => item.productId !== productId);
+    items = items.filter(item => String(item.productId) !== id);
     this.saveItems(items);
     showToast('تم حذف المنتج من السلة', 'info');
     return items;
   },
 
   updateQuantity(productId, quantity) {
+    const id = String(productId);
     const items = this.getItems();
-    const item = items.find(i => i.productId === productId);
+    const item = items.find(i => String(i.productId) === id);
     if (item) {
       if (quantity <= 0) {
-        return this.removeItem(productId);
+        return this.removeItem(id);
       }
       item.quantity = quantity;
       this.saveItems(items);
@@ -451,7 +454,7 @@ const Cart = {
   getTotal(products) {
     const items = this.getItems();
     return items.reduce((total, item) => {
-      const product = products.find(p => p.id === item.productId);
+      const product = products.find(p => String(p.id) === String(item.productId));
       if (product) {
         total += product.price * item.quantity;
       }
@@ -494,14 +497,16 @@ const Favorites = {
   },
 
   toggle(productId) {
-    let items = this.getItems();
-    const index = items.indexOf(productId);
+    const id = String(productId); // normalize to string
+    let items = this.getItems().map(String); // normalize stored items
+    const index = items.indexOf(id);
     if (index > -1) {
       items.splice(index, 1);
       showToast('تم إزالة المنتج من المفضلة', 'info');
     } else {
-      items.push(productId);
+      items.push(id);
       showToast('تمت إضافة المنتج إلى المفضلة ❤', 'success');
+      this.fireConfetti();
     }
     localStorage.setItem(this.KEY, JSON.stringify(items));
     this.updateIcons();
@@ -509,12 +514,12 @@ const Favorites = {
   },
 
   isFavorite(productId) {
-    return this.getItems().includes(productId);
+    return this.getItems().map(String).includes(String(productId));
   },
 
   updateIcons() {
     document.querySelectorAll('[data-fav-id]').forEach(btn => {
-      const id = parseInt(btn.dataset.favId);
+      const id = String(btn.dataset.favId); // normalize to string
       if (this.isFavorite(id)) {
         btn.classList.add('favorited');
         btn.innerHTML = '<i class="fas fa-heart"></i>';
@@ -523,6 +528,19 @@ const Favorites = {
         btn.innerHTML = '<i class="far fa-heart"></i>';
       }
     });
+  },
+
+  fireConfetti() {
+    if (!window.confetti) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+      script.onload = () => {
+        window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#ff4d4d', '#ff9999', '#ffffff'] });
+      };
+      document.head.appendChild(script);
+    } else {
+      window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#ff4d4d', '#ff9999', '#ffffff'] });
+    }
   }
 };
 
@@ -858,7 +876,7 @@ function generateSkeletons(count = 6) {
 
 // ── Product Modal ──
 function openProductModal(productId) {
-  const product = productsData.find(p => p.id === productId);
+  const product = productsData.find(p => String(p.id) === String(productId));
   if (!product) return;
 
   let modal = document.getElementById('productModal');

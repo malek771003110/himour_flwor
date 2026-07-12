@@ -139,8 +139,8 @@ function applyFilters() {
 }
 
 function renderFavorites() {
-  const favoriteIds = Favorites.getItems();
-  const filtered = allProducts.filter(p => favoriteIds.includes(p.id));
+  const favoriteIds = Favorites.getItems().map(String); // normalize to strings
+  const filtered = allProducts.filter(p => favoriteIds.includes(String(p.id)));
   renderProducts(filtered, true);
 }
 

@@ -51,7 +51,7 @@ function renderCartItems() {
   const items = Cart.getItems();
   
   cartItemsList.innerHTML = items.map(item => {
-    const product = allProducts.find(p => p.id === item.productId);
+    const product = allProducts.find(p => String(p.id) === String(item.productId));
     if (!product) return '';
 
     const optionsStr = [];
@@ -90,16 +90,17 @@ function renderCartItems() {
 }
 
 function changeCartQty(productId, delta) {
+  const id = String(productId);
   const items = Cart.getItems();
-  const item = items.find(i => i.productId === productId);
+  const item = items.find(i => String(i.productId) === id);
   if (!item) return;
 
-  const product = allProducts.find(p => p.id === productId);
+  const product = allProducts.find(p => String(p.id) === id);
   const maxStock = product ? product.quantity : 99;
 
   const newQty = item.quantity + delta;
   if (newQty >= 1 && newQty <= maxStock) {
-    Cart.updateQuantity(productId, newQty);
+    Cart.updateQuantity(id, newQty);
     initCartPage();
   } else if (newQty > maxStock) {
     showToast(`الكمية المتاحة في المخزن هي ${maxStock} فقط`, 'warning');
@@ -340,7 +341,7 @@ async function submitOrder() {
     total: grandTotal,
     couponCode: appliedCoupon ? appliedCoupon.code : null,
     items: cartItems.map(item => {
-      const p = allProducts.find(prod => prod.id === item.productId);
+      const p = allProducts.find(prod => String(prod.id) === String(item.productId));
       return {
         productId: item.productId,
         name: p ? p.name : 'منتج غير معروف',
