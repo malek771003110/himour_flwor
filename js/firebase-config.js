@@ -16,6 +16,9 @@ if (typeof firebase !== 'undefined') {
   firebase.initializeApp(firebaseConfig);
   window.db = firebase.firestore();
   window.auth = firebase.auth();
+  if (firebase.storage) {
+    window.storage = firebase.storage();
+  }
   console.log("Firebase has been initialized successfully!");
 } else {
   console.error("Firebase SDK is not loaded. Please check CDN scripts in HTML.");

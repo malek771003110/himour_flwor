@@ -613,7 +613,7 @@ function renderProductsTable() {
 
   tbody.innerHTML = adminProducts.map(p => `
     <tr>
-      <td><img src="${p.images[0]}" alt="${p.name}" style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm);"></td>
+      <td><img src="${p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600'}" alt="${p.name}" style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm);"></td>
       <td style="font-weight: 600;">${p.name} <br><small style="color:var(--color-text-light); font-family: monospace;">${p.nameEn}</small></td>
       <td><span class="status-badge" style="background: rgba(212,168,83,0.1); color: var(--color-gold-dark);">${p.category}</span></td>
       <td style="font-weight: 700; color: var(--color-primary);">${p.price} ${STORE_CONFIG.currency}</td>
@@ -707,10 +707,6 @@ async function saveProductData() {
 
   // Basic image url split logic
   const images = imagesText.split(/[\n,]+/).map(url => url.trim()).filter(url => url.length > 0);
-  if (images.length === 0) {
-    showToast('يجب إدخال رابط صورة صالح واحد على الأقل', 'error');
-    return;
-  }
 
   const occasions = occasionsText ? occasionsText.split(',').map(o => o.trim()).filter(o => o.length > 0) : [];
   const colors = colorsText ? colorsText.split(',').map(c => c.trim()).filter(c => c.length > 0) : [];
@@ -800,4 +796,46 @@ async function saveProductData() {
 function closeAdminModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.classList.remove('active');
+}
+
+// ── Image Upload Handling ──
+async function handleImageUpload(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  if (!window.storage) {
+    showToast('خدمة التخزين (Firebase Storage) غير مفعلة، يرجى إدخال الرابط يدوياً.', 'error');
+    return;
+  }
+
+  const progressDiv = document.getElementById('uploadProgress');
+  const textarea = document.getElementById('prodImages');
+  
+  progressDiv.style.display = 'block';
+  let currentUrls = textarea.value.trim() ? textarea.value.trim() + '\n' : '';
+
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      progressDiv.textContent = `جاري رفع الصورة ${i + 1} من ${files.length}... يرجى الانتظار`;
+      
+      const storageRef = firebase.storage().ref();
+      // إنشاء اسم فريد للصورة
+      const fileRef = storageRef.child(`products/${Date.now()}_${file.name}`);
+      
+      const snapshot = await fileRef.put(file);
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      
+      currentUrls += downloadURL + '\n';
+    }
+    
+    textarea.value = currentUrls.trim();
+    showToast('تم رفع الصور بنجاح ✓', 'success');
+  } catch (error) {
+    console.error("Upload error:", error);
+    showToast('حدث خطأ أثناء رفع الصور!', 'error');
+  } finally {
+    progressDiv.style.display = 'none';
+    event.target.value = ''; // إعادة تعيين الحقل
+  }
 }
