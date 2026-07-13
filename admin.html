@@ -355,8 +355,10 @@
         </div>
 
         <div class="form-group">
-          <label for="prodImages">روابط الصور (رابط في كل سطر أو مفصولة بفاصلة) <span class="required">*</span></label>
-          <textarea id="prodImages" class="form-control" style="min-height: 60px;" placeholder="https://unsplash.com/example..." required></textarea>
+          <label for="prodImages">روابط الصور (رفع من الجهاز أو إدخال روابط)</label>
+          <input type="file" id="prodImageUpload" class="form-control" accept="image/*" multiple style="margin-bottom: 0.5rem;" onchange="handleImageUpload(event)">
+          <div id="uploadProgress" style="display: none; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--color-primary); font-weight: bold;">جاري الرفع... يرجى الانتظار</div>
+          <textarea id="prodImages" class="form-control" style="min-height: 60px;" placeholder="https://unsplash.com/example..."></textarea>
         </div>
 
         <div class="form-row">
@@ -387,8 +389,8 @@
         </div>
 
         <div class="form-group">
-          <label for="prodFullDesc">الوصف الكامل والمواصفات <span class="required">*</span></label>
-          <textarea id="prodFullDesc" class="form-control" style="min-height: 100px;" required></textarea>
+          <label for="prodFullDesc">الوصف الكامل والمواصفات</label>
+          <textarea id="prodFullDesc" class="form-control" style="min-height: 100px;"></textarea>
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem;">
@@ -409,6 +411,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   <!-- Firebase Config -->
   <script src="js/firebase-config.js"></script>
 
