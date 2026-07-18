@@ -706,7 +706,7 @@ async function saveProductData() {
   const isFeatured = document.getElementById('prodIsFeatured').checked;
 
   // Basic image url split logic
-  const images = imagesText.split(/[\n,]+/).map(url => url.trim()).filter(url => url.length > 0);
+  const images = imagesText.split(/\n+/).map(url => url.trim()).filter(url => url.length > 0);
 
   const occasions = occasionsText ? occasionsText.split(',').map(o => o.trim()).filter(o => o.length > 0) : [];
   const colors = colorsText ? colorsText.split(',').map(c => c.trim()).filter(c => c.length > 0) : [];
@@ -799,43 +799,74 @@ function closeAdminModal(modalId) {
 }
 
 // ── Image Upload Handling ──
-async function handleImageUpload(event) {
+function handleImageUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
-
-  if (!window.storage) {
-    showToast('خدمة التخزين (Firebase Storage) غير مفعلة، يرجى إدخال الرابط يدوياً.', 'error');
-    return;
-  }
 
   const progressDiv = document.getElementById('uploadProgress');
   const textarea = document.getElementById('prodImages');
   
   progressDiv.style.display = 'block';
-  let currentUrls = textarea.value.trim() ? textarea.value.trim() + '\n' : '';
+  progressDiv.textContent = 'جاري معالجة الصور... يرجى الانتظار';
 
-  try {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      progressDiv.textContent = `جاري رفع الصورة ${i + 1} من ${files.length}... يرجى الانتظار`;
-      
-      const storageRef = firebase.storage().ref();
-      // إنشاء اسم فريد للصورة
-      const fileRef = storageRef.child(`products/${Date.now()}_${file.name}`);
-      
-      const snapshot = await fileRef.put(file);
-      const downloadURL = await snapshot.ref.getDownloadURL();
-      
-      currentUrls += downloadURL + '\n';
-    }
-    
-    textarea.value = currentUrls.trim();
-    showToast('تم رفع الصور بنجاح ✓', 'success');
-  } catch (error) {
-    console.error("Upload error:", error);
-    showToast('حدث خطأ أثناء رفع الصور!', 'error');
-  } finally {
-    progressDiv.style.display = 'none';
-    event.target.value = ''; // إعادة تعيين الحقل
-  }
+  let processed = 0;
+  const results = [];
+
+  Array.from(files).forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Compress via canvas
+      const img = new Image();
+      img.onload = function() {
+        try {
+          const canvas = document.createElement('canvas');
+          let w = img.width;
+          let h = img.height;
+          const MAX = 800;
+          if (w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          else if (h > w && h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+          else if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          results[index] = canvas.toDataURL('image/jpeg', 0.65);
+        } catch (err) {
+          // fallback: use raw base64 if canvas fails
+          results[index] = e.target.result;
+        }
+        processed++;
+        if (processed === files.length) {
+          const existing = textarea.value.trim();
+          const newUrls = results.filter(Boolean).join('\n');
+          textarea.value = existing ? existing + '\n' + newUrls : newUrls;
+          progressDiv.style.display = 'none';
+          event.target.value = '';
+          showToast('تمت معالجة الصور بنجاح ✓', 'success');
+        }
+      };
+      img.onerror = function() {
+        // If image can't be loaded just use raw data
+        results[index] = e.target.result;
+        processed++;
+        if (processed === files.length) {
+          const existing = textarea.value.trim();
+          const newUrls = results.filter(Boolean).join('\n');
+          textarea.value = existing ? existing + '\n' + newUrls : newUrls;
+          progressDiv.style.display = 'none';
+          event.target.value = '';
+          showToast('تمت معالجة الصور ✓', 'success');
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() {
+      processed++;
+      results[index] = null;
+      if (processed === files.length) {
+        progressDiv.style.display = 'none';
+        showToast('فشل قراءة إحدى الصور', 'error');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
 }
