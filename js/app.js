@@ -340,13 +340,14 @@ async function loadProducts() {
         let defaultProds = [];
         for (let i = 1; i <= 3; i++) {
           try {
-            let response = await fetch('products_' + i + '.json');
+            let response = await fetch('data/products_' + i + '.json');
             if (response.ok) {
               let chunk = await response.json();
               defaultProds = defaultProds.concat(chunk);
             }
           } catch(e) { console.warn('Could not load chunk ' + i); }
         }
+        if (defaultProds.length === 0) throw new Error("No products loaded");
         for (const prod of defaultProds) {
           // add default products into flowers with mapping
           let fProd = {
@@ -378,13 +379,14 @@ async function loadProducts() {
     productsData = [];
     for (let i = 1; i <= 3; i++) {
       try {
-        let response = await fetch('products_' + i + '.json');
+        let response = await fetch('data/products_' + i + '.json');
         if (response.ok) {
           let chunk = await response.json();
           productsData = productsData.concat(chunk);
         }
       } catch(e) { console.warn('Could not load chunk ' + i); }
     }
+    if (productsData.length === 0) throw new Error("No products loaded");
     localStorage.setItem('ward_products_db', JSON.stringify(productsData));
     return productsData;
   } catch (e) {
