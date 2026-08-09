@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="تصفح تشكيلتنا الفاخرة من باقات الورد والورود المنفردة والهدايا والنباتات الداخلية. محل عشق حيمور يسهل عليك اختيار الهدية المثالية مع توصيل سريع.">
+  <meta name="keywords" content="عشق حيمور، متجر ورد، شراء ورد، باقات ورد، ورود حمراء، هدايا ورد، نباتات منزلية">
+  <meta property="og:title" content="المتجر | عشق حيمور - محل ورد فاخر">
+  <meta property="og:description" content="تصفح تشكيلتنا الفاخرة واطلب أفضل تنسيقات الزهور والهدايا أونلاين">
+  <meta property="og:type" content="website">
+  <title>عشق حيمور - المتجر الإلكتروني</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💐</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbarPlaceholder"></div>
+
+  <!-- Page Header -->
+  <header class="page-header fade-up">
+    <h1>المتجر الإلكتروني</h1>
+    <div class="breadcrumb">
+      <a href="index.html">الرئيسية</a>
+      <i class="fas fa-chevron-left text-gold" style="font-size: 0.75rem;"></i>
+      <span>المتجر</span>
+    </div>
+  </header>
+
+  <!-- Shop Content Section -->
+  <section class="section" style="padding-top: 2rem;">
+    <div class="section-container">
+      
+      <!-- Filter Bar -->
+      <div class="filter-bar fade-up">
+        <div class="filter-group">
+          <label for="filterSearch">البحث السريع</label>
+          <input type="text" id="filterSearch" placeholder="ابحث باسم المنتج...">
+        </div>
+        <div class="filter-group">
+          <label for="filterCategory">القسم</label>
+          <select id="filterCategory">
+            <option value="all">الكل</option>
+            <option value="باقات ورد">باقات ورد</option>
+            <option value="ورود منفردة">ورود منفردة</option>
+            <option value="هدايا">هدايا</option>
+            <option value="نباتات">نباتات</option>
+            <option value="إكسسوارات">إكسسوارات</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterPrice">نطاق السعر</label>
+          <select id="filterPrice">
+            <option value="all">الكل</option>
+            <option value="0-15">أقل من 15 د.أ</option>
+            <option value="15-30">15 - 30 د.أ</option>
+            <option value="30-50">30 - 50 د.أ</option>
+            <option value="50+">أكثر من 50 د.أ</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterOccasion">المناسبة</label>
+          <select id="filterOccasion">
+            <option value="all">الكل</option>
+            <option value="عيد ميلاد">عيد ميلاد</option>
+            <option value="عرس">عرس</option>
+            <option value="يوم الأم">يوم الأم</option>
+            <option value="تخرج">تخرج</option>
+            <option value="تعزية">تعزية</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="sortProducts">ترتيب حسب</label>
+          <select id="sortProducts">
+            <option value="default">الافتراضي</option>
+            <option value="price-asc">السعر: من الأقل للأعلى</option>
+            <option value="price-desc">السعر: من الأعلى للأقل</option>
+            <option value="rating-desc">التقييم: الأعلى أولاً</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="emptyState">
+        <div class="empty-icon"><i class="fas fa-search-minus"></i></div>
+        <h3>عذراً، لم نجد أي منتجات!</h3>
+        <p>جرب تغيير خيارات البحث أو الفلاتر التي قمت بتحديدها.</p>
+        <button class="btn btn-primary" onclick="resetFilters()">إعادة تعيين الفلاتر</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="shopGrid">
+        <!-- Will be loaded dynamically from products.json -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footerPlaceholder"></div>
+
+  <!-- Scripts -->
+  <!-- Firebase SDK (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Config -->
+  <script src="js/firebase-config.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+</html>

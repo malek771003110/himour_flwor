@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="سلة المشتريات والدفع في متجر وَرد. راجع باقتك، أدخل كود الخصم، أكمل بيانات التوصيل واحصل على باقتك الفاخرة بسرعة.">
+  <meta name="keywords" content="سلة المشتريات، إتمام الطلب، شراء ورد، الدفع عند الاستلام">
+  <title>عشق حيمور - سلة المشتريات وإتمام الطلب</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Responsive layout adjustment for checkout */
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .checkout-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .step-content {
+      display: none;
+    }
+    .step-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbarPlaceholder"></div>
+
+  <!-- Page Header -->
+  <header class="page-header fade-up">
+    <h1>سلة المشتريات</h1>
+    <div class="breadcrumb">
+      <a href="index.html">الرئيسية</a>
+      <i class="fas fa-chevron-left text-gold" style="font-size: 0.75rem;"></i>
+      <span>سلة المشتريات وإتمام الطلب</span>
+    </div>
+  </header>
+
+  <!-- Cart Content Section -->
+  <main class="cart-page">
+    <div class="cart-container">
+      
+      <!-- Stepper Header -->
+      <div class="stepper fade-up" id="checkoutStepper">
+        <div class="step active" id="stepIndicator1">
+          <div class="step-number">١</div>
+          <div class="step-label">سلة التسوق</div>
+        </div>
+        <div class="step-line" id="stepLine1"></div>
+        <div class="step" id="stepIndicator2">
+          <div class="step-number">٢</div>
+          <div class="step-label">تفاصيل التوصيل</div>
+        </div>
+        <div class="step-line" id="stepLine2"></div>
+        <div class="step" id="stepIndicator3">
+          <div class="step-number">٣</div>
+          <div class="step-label">تأكيد الطلب</div>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="checkout-layout" id="checkoutLayout">
+        
+        <!-- Left Side: Step Contents -->
+        <div class="checkout-main fade-up">
+          
+          <!-- STEP 1: CART LIST -->
+          <div class="step-content active" id="stepContent1">
+            <div class="cart-items" id="cartItemsList">
+              <!-- Rendered via JS -->
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+              <a href="shop.html" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-right"></i> مواصلة التسوق
+              </a>
+              <button class="btn btn-primary btn-lg" id="btnGoToStep2" onclick="goToStep(2)">
+                إكمال الطلب <i class="fas fa-arrow-left"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 2: SHIPPING AND PAYMENT FORM -->
+          <div class="step-content" id="stepContent2">
+            <div style="background: white; padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid rgba(200, 67, 106, 0.06);">
+              <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--color-primary); border-bottom: 1px solid rgba(200,67,106,0.06); padding-bottom: 0.5rem;">
+                <i class="fas fa-truck"></i> معلومات الشحن والتوصيل
+              </h2>
+              
+              <form id="checkoutForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                  <label for="custName">الاسم بالكامل <span class="required">*</span></label>
+                  <input type="text" id="custName" class="form-control" placeholder="أدخل اسمك الكامل..." required>
+                  <div class="form-error">الاسم بالكامل مطلوب.</div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="custPhone">رقم الجوال <span class="required">*</span></label>
+                    <input type="tel" id="custPhone" class="form-control" placeholder="07xxxxxxxx" pattern="^07[789]\d{7}$" required>
+                    <div class="form-error">رقم الجوال يجب أن يبدأ بـ 07 ويتكون من 10 أرقام.</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="custCity">المدينة / الحي <span class="required">*</span></label>
+                    <input type="text" id="custCity" class="form-control" placeholder="مثال: عمان، جبل عمان..." required>
+                    <div class="form-error">المدينة والحي مطلوبة لتنسيق التوصيل.</div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="deliveryDate">تاريخ التوصيل <span class="required">*</span></label>
+                    <input type="date" id="deliveryDate" class="form-control" required>
+                    <div class="form-error">يرجى تحديد تاريخ توصيل صالح.</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="deliveryTime">وقت التوصيل المناسب <span class="required">*</span></label>
+                    <select id="deliveryTime" class="form-control" required>
+                      <option value="">اختر الفترة...</option>
+                      <option value="9 AM - 12 PM">صباحاً (9:00 ص - 12:00 م)</option>
+                      <option value="1 PM - 5 PM">عصراً (1:00 م - 5:00 م)</option>
+                      <option value="6 PM - 11 PM">مساءً (6:00 م - 11:00 م)</option>
+                    </select>
+                    <div class="form-error">يرجى تحديد فترة التوصيل المناسبة.</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="orderNotes">ملاحظات إضافية للمندوب (اختياري)</label>
+                  <textarea id="orderNotes" class="form-control" style="min-height: 80px;" placeholder="أي تفاصيل أخرى مثل رقم البوابة، أو كود جرس المنزل..."></textarea>
+                </div>
+
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1.5rem; color: var(--color-primary); border-bottom: 1px solid rgba(200,67,106,0.06); padding-bottom: 0.5rem;">
+                  <i class="fas fa-credit-card"></i> طريقة الدفع
+                </h2>
+
+                <div class="payment-methods">
+                  <div class="payment-method selected" data-method="cod" onclick="selectPaymentMethod(this)">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>الدفع عند الاستلام</span>
+                  </div>
+                  <div class="payment-method" data-method="card" onclick="selectPaymentMethod(this)">
+                    <i class="fas fa-credit-card"></i>
+                    <span>بطاقة دفع (فيزا / ماستركارد)</span>
+                  </div>
+                  <div class="payment-method" data-method="bank" onclick="selectPaymentMethod(this)">
+                    <i class="fas fa-university"></i>
+                    <span>تحويل بنكي</span>
+                  </div>
+                </div>
+
+                <!-- Bank details container (hidden by default) -->
+                <div id="bankDetails" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--color-secondary-light); border-radius: var(--radius-md); font-size: 0.85rem; border: 1px dashed var(--color-primary);">
+                  <p><strong>البنك:</strong> بنك الاتحاد</p>
+                  <p><strong>رقم الحساب / الهاتف:</strong> <span dir="ltr">0771003110</span></p>
+                  <p><strong>الاسم:</strong> MALEK MOHAMMAD MAHMOUD KHALIL</p>
+                  <p style="color: var(--color-primary); font-weight: 600; margin-top: 0.5rem;">يرجى تحويل قيمة الطلب وإرسال إيصال التحويل عند التواصل معك لتأكيد الطلب.</p>
+                </div>
+
+                <!-- Card details container (hidden by default) -->
+                <div id="cardDetails" style="display: none; margin-top: 1rem; padding: 1.5rem; background: #fafafa; border: 1px solid var(--color-secondary); border-radius: var(--radius-md);">
+                  <p style="font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 1rem;">* هذا المتجر تجريبي. يمكنك تعبئة الحقول لإكمال الدورة التجريبية فقط.</p>
+                  <div class="form-group">
+                    <label>رقم البطاقة</label>
+                    <input type="text" class="form-control" placeholder="xxxx xxxx xxxx xxxx" maxlength="19">
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>تاريخ الانتهاء</label>
+                      <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                      <label>الرمز السري (CVV)</label>
+                      <input type="password" class="form-control" placeholder="xxx" maxlength="3">
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+              <button class="btn btn-outline-primary" onclick="goToStep(1)">
+                <i class="fas fa-arrow-right"></i> سلة المشتريات
+              </button>
+              <button class="btn btn-primary btn-lg" id="btnPlaceOrder" onclick="submitOrder()">
+                تأكيد وإتمام الطلب <i class="fas fa-check"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3: ORDER CONFIRMATION / THANK YOU -->
+          <div class="step-content" id="stepContent3">
+            <div class="confirmation-page" style="background: white; padding: 3.5rem 2rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid rgba(200, 67, 106, 0.06);">
+              <div class="confirmation-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <h2 style="font-size: 1.8rem; font-weight: 900; color: var(--color-text); margin-bottom: 0.5rem;">تم استلام طلبك بنجاح!</h2>
+              <p style="color: var(--color-text-light); margin-bottom: 1.5rem;">شكراً لتسوقك من متجر <strong>وَرد</strong>. تم إرسال تفاصيل طلبك إلينا وجاري معالجته.</p>
+              
+              <div style="background: var(--color-secondary-light); border-radius: var(--radius-md); padding: 1.5rem; max-width: 500px; margin: 0 auto 2rem; border: 1px solid rgba(200,67,106,0.06); text-align: right;">
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--color-primary); text-align: center; border-bottom: 1px solid rgba(200,67,106,0.1); padding-bottom: 0.4rem;">تفاصيل طلبك</h3>
+                <p><strong>رقم الطلب:</strong> <span id="receiptOrderId" style="font-family: monospace; font-weight: 700; color: var(--color-primary);">ORD-XXXX</span></p>
+                <p><strong>المستلم:</strong> <span id="receiptName">أحمد</span></p>
+                <p><strong>رقم الجوال:</strong> <span id="receiptPhone" dir="ltr">0790000000</span></p>
+                <p><strong>تاريخ التوصيل:</strong> <span id="receiptDate">2026/06/26</span></p>
+                <p><strong>قيمة الطلب:</strong> <span id="receiptTotal" style="font-weight: 700;">199 د.أ</span></p>
+              </div>
+
+              <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="openWhatsAppReceipt()">
+                  <i class="fab fa-whatsapp"></i> تواصل معنا عبر واتساب
+                </button>
+                <a href="shop.html" class="btn btn-outline-primary">
+                  العودة للمتجر <i class="fas fa-store"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side: Order Summary -->
+        <aside class="cart-summary fade-up" id="checkoutSummary">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--color-text); margin-bottom: 1.25rem;">
+            ملخص الطلب
+          </h3>
+          
+          <div class="summary-row">
+            <span>عدد المنتجات</span>
+            <span id="summaryCount">0</span>
+          </div>
+          <div class="summary-row">
+            <span>مجموع السلة</span>
+            <span id="summarySubtotal">0 د.أ</span>
+          </div>
+          <div class="summary-row">
+            <span>الخصم</span>
+            <span id="summaryDiscount" class="text-danger">-0 د.أ</span>
+          </div>
+          <div class="summary-row">
+            <span>تكلفة التوصيل</span>
+            <span id="summaryDelivery">0 د.أ</span>
+          </div>
+          <div class="summary-row" style="border-top: 2px solid rgba(200, 67, 106, 0.1); padding-top: 1rem; margin-top: 0.5rem;">
+            <strong>المجموع الكلي</strong>
+            <strong id="summaryTotal" class="summary-total">0 د.أ</strong>
+          </div>
+
+          <!-- Coupon Input -->
+          <div class="coupon-section" id="summaryCouponBlock">
+            <input type="text" id="couponCode" placeholder="كود الخصم (مثال: WELCOME10)">
+            <button class="btn btn-sm btn-outline-primary" style="border-radius: var(--radius-md);" onclick="applyCoupon()">تطبيق</button>
+          </div>
+          <div id="couponMessage" style="font-size: 0.8rem; font-weight: 600; margin-top: -0.5rem; margin-bottom: 0.75rem; display: none;"></div>
+        </aside>
+
+      </div>
+
+      <!-- Empty Cart State -->
+      <div class="empty-state hidden" id="emptyCartState">
+        <div class="empty-icon"><i class="fas fa-shopping-basket"></i></div>
+        <h3>سلة التسوق فارغة!</h3>
+        <p>لم تقم بإضافة أي منتجات للسلة بعد. تصفح المتجر واختر باقتك المفضلة.</p>
+        <a href="shop.html" class="btn btn-primary">اذهب للمتجر <i class="fas fa-arrow-left"></i></a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footerPlaceholder"></div>
+
+  <!-- Scripts -->
+  <!-- Firebase SDK (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Config -->
+  <script src="js/firebase-config.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>
