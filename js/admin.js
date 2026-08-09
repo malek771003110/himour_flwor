@@ -48,7 +48,20 @@ async function handleLogin() {
   if (window.auth) {
     try {
       const email = user.includes('@') ? user : `${user}@ward-shop.com`;
-      await window.auth.signInWithEmailAndPassword(email, pass);
+      try {
+        await window.auth.signInWithEmailAndPassword(email, pass);
+      } catch (err) {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials') {
+          if (user === STORE_CONFIG.adminUsername && pass === STORE_CONFIG.adminPassword) {
+            console.log("Auto-creating admin account...");
+            await window.auth.createUserWithEmailAndPassword(email, pass);
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
       localStorage.setItem('ward_admin_logged_in', 'true');
       if (errorMsg) errorMsg.style.display = 'none';
       await showDashboard();
@@ -56,6 +69,7 @@ async function handleLogin() {
       return;
     } catch (firebaseErr) {
       console.warn("Firebase Auth failed, trying local fallback:", firebaseErr);
+      alert("ملاحظة: فشل الدخول في Firebase. تأكد أن نظام Email/Password Auth مفعل من منصة Firebase. التخزين سيعمل محلياً فقط. (" + firebaseErr.message + ")");
     }
   }
 
@@ -780,8 +794,10 @@ async function saveProductData() {
   if (savedProd && window.db) {
     try {
       await window.db.collection('flowers').doc(savedProd.id.toString()).set(savedProd, { merge: true });
+      showToast('تم حفظ المنتج في قاعدة البيانات العالمية بنجاح ✓', 'success');
     } catch (e) {
       console.warn("Firestore error saving/updating product:", e);
+      alert("⚠️ فشل الحفظ في قاعدة البيانات العالمية! (المنتج تم حفظه في ذاكرة جهازك الحالي فقط ولن يظهر على الأجهزة الأخرى).\nالسبب: " + e.message);
     }
   }
 
